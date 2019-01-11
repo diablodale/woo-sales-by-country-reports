@@ -274,7 +274,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$export_prep = $this->prepare_chart_data( $data, 'post_date', $report_type, $this->chart_interval, $this->start_date, $this->chart_groupby );
 			$export_array[ $country ] = array_values( $export_prep );
 		}
-echo '<pre>';print_r($export_array);echo '</pre>';
+
 		// Move undefined to the end of the data
 		if ( isset( $export_array['UNDEFINED'] ) ) {
 			$temp = $export_array['UNDEFINED'];
