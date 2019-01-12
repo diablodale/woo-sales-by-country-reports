@@ -20,10 +20,10 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	private $report_data;	
 	public function __construct() {
 		if ( isset( $_GET['show_countries'] ) ) {			
-			$this->show_countries = sanitize_text_field($_GET['show_countries']);			
+			$this->show_countries = wp_unslash($_GET['show_countries']);			
 		}
 		if ( isset( $_GET['show_region'] ) ) {			
-			$this->show_region = sanitize_text_field($_GET['show_region']);
+			$this->show_region = wp_unslash($_GET['show_region']);
 		}		
 	}
 
@@ -172,8 +172,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				} 
 			}
 			$this->show_countries = $single_region_country;
-		}				
-				
+		}		
 		if($this->show_countries){
 			foreach($data->orders as $key=>$value){
 				
