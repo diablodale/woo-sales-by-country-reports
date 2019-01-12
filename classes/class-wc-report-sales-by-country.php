@@ -72,7 +72,6 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				),				
 				'group_by'            => 'YEAR(posts.post_date), MONTH(posts.post_date), DAY(posts.post_date), meta__' . $this->location_by . '_country.meta_value',				
 				'order_by'            => 'total_sales DESC',
-				'limit'               => '10',
 				'query_type'          => 'get_results',
 				'filter_range'        => true,
 				'order_types'         => array_merge( array( 'shop_order_refund' ), wc_get_order_types( 'sales-reports' ) ),
@@ -107,7 +106,6 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				),				
 				'group_by'            => 'YEAR(posts.post_date), MONTH(posts.post_date), DAY(posts.post_date), meta__' . $this->location_by . '_country.meta_value',				
 				'order_by'            => 'total_sales DESC',
-				'limit'               => '10',
 				'query_type'          => 'get_results',
 				'filter_range'        => true,
 				'order_types'         => array_merge( array( 'shop_order_refund' ), wc_get_order_types( 'sales-reports' ) ),
@@ -175,7 +173,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			}
 			$this->show_countries = $single_region_country;
 		}				
-		//echo '<pre>';print_r($single_region_country);echo '</pre>';		
+				
 		if($this->show_countries){
 			foreach($data->orders as $key=>$value){
 				
@@ -349,11 +347,11 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 							position: "bottom",
 							tickColor: 'transparent',
 							mode: "time",
-							timeformat: "%d %b",
-							monthNames: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+							timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
+							monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
 							tickLength: 1,
-							minTickSize: [1, "day"],
-							tickSize: [1, "day"],
+							minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
+							tickSize: [1, "<?php echo $this->chart_groupby; ?>"],
 							font: {
 								color: "#aaa"
 							}
@@ -410,11 +408,11 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 							position: "bottom",
 							tickColor: 'transparent',
 							mode: "time",
-							timeformat: "%d %b",
-							monthNames: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+							timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
+							monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
 							tickLength: 1,
-							minTickSize: [1, "day"],
-							tickSize: [1, "day"],
+							minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
+							tickSize: [1, "<?php echo $this->chart_groupby; ?>"],
 							font: {
 								color: "#aaa"
 							}
@@ -515,7 +513,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		$widgets = array();		
 		
 		$widgets[] = array(
-			'title'    => __( 'Top 10 Countries', 'woo-sales-country-reports' ),
+			'title'    => __( 'Top Countries', 'woo-sales-country-reports' ),
 			'callback' => array( $this, 'top_country_widget' ),
 		);
 		
@@ -715,8 +713,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			'month'        => __( 'This Month', 'woo-sales-country-reports' ),
 			'7day'         => __( 'Last 7 Days', 'woo-sales-country-reports' ),
 		);
-
-		$this->chart_colours = array( '#3498db', '#34495e', '#1abc9c', '#ff0000', '#f1c40f', '#e67e22', '#e74c3c', '#2980b9', '#8e44ad', '#2c3e50', '#16a085', '#27ae60', '#f39c12', '#d35400', '#c0392b' );
+		$this->chart_colours = array( '#3498db', '#34495e', '#1abc9c', '#ff0000', '#f1c40f', '#e67e22', '#e74c3c', '#2980b9', '#8e44ad', '#2c3e50', '#16a085', '#27ae60', '#f39c12', '#d35400', '#c0392b','#AF2460','#E761BD','#7E05A3','#91EFF7','#C0CE13','#102992','#EF0FD0','#916B7B','#94C52D','#C41D18','#5DF12B','#1D90FC','#C68656','#6DE821','#11CADA','#FA17F0','#CBDD3C');
 
 		$current_range = ! empty( $_GET['range'] ) ? sanitize_text_field( $_GET['range'] ) : '7day';
 
