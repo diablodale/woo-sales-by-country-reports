@@ -80,6 +80,41 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				)
 		);
 		
+		$this->report_data->c_orders = (array) $this->get_order_report_data(
+			array(
+				'data' => array(
+					'_' . $this->location_by . '_country' => array(
+						'type'     => 'meta',
+						'name'     => 'countries_data',
+						'function' => null,
+					),
+					'_order_total' => array(
+						'type'     => 'meta',
+						'function' => 'SUM',
+						'name'     => 'total_sales',
+					),
+					'ID' => array(
+						'type'     => 'post_data',
+						'function' => 'COUNT',
+						'name'     => 'count',
+						'distinct' => true,
+					),
+					'post_date' => array(
+						'type'     => 'post_data',
+						'function' => '',
+						'name'     => 'post_date',
+					),
+				),				
+				'group_by'            => 'YEAR(posts.post_date), MONTH(posts.post_date), DAY(posts.post_date), meta__' . $this->location_by . '_country.meta_value',				
+				'order_by'            => 'total_sales DESC',
+				'query_type'          => 'get_results',
+				'filter_range'        => true,
+				'order_types'         => array_merge( array( 'shop_order_refund' ), wc_get_order_types( 'sales-reports' ) ),
+				'order_status'        => array( 'completed', 'processing', 'on-hold' ),
+				'parent_order_status' => array( 'completed', 'processing', 'on-hold' ),
+				)
+		);
+		
 		$this->report_data->or_orders = (array) $this->get_order_report_data(
 			array(
 				'data' => array(
@@ -207,11 +242,17 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				$location_values->countries_data = 'UNDEFINED';
 			}
 
-			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;
+			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;					
 			
 			$export_data[ $location_values->countries_data ][] = $location_values;
 		}
-
+		arsort($country_data);
+		$index = 0;
+		foreach($country_data as $country=>$sales){
+			$country_sort_order[$index] = $country;
+			$index++;
+		}	
+		
 		$placeholder = __( 'This is the sum of the order totals after any refunds and including shipping and taxes.', 'woo-sales-country-reports' );
 		
 		foreach ( $data->order_counts as $location_values ) {
@@ -224,6 +265,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$export_data[ $location_values->countries_data ][] = $location_values;
 		}			
 		$count_placeholder = __( 'This is the count of orders during this period.', 'woo-sales-country-reports' );
+		$export_data = array_merge(array_flip($country_sort_order), $export_data);
 		
 		//Pass the data to the screen.
 		$this->location_data = $country_data;		
@@ -265,13 +307,15 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		/* Export Code */
 		$export_array = array();
 		$report_type = ( 'number-orders' == $this->totals_by ) ? 'count' : 'total_sales';
-
+		
 		foreach ( $export_data as $country => $data ) {
 			
 			$export_prep = $this->prepare_chart_data( $data, 'post_date', $report_type, $this->chart_interval, $this->start_date, $this->chart_groupby );
 			$export_array[ $country ] = array_values( $export_prep );
+			
 		}
-
+		
+		//arsort($export_array);
 		// Move undefined to the end of the data
 		if ( isset( $export_array['UNDEFINED'] ) ) {
 			$temp = $export_array['UNDEFINED'];
@@ -293,6 +337,8 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				var series = [
 					<?php
 						$index = 0;
+						$max_data = 10;
+						
 						foreach ( $export_array as $country => $data ) {
 							
 							$color  = isset( $this->chart_colours[ $index ] ) ? $this->chart_colours[ $index ] : $this->chart_colours[0];
@@ -303,7 +349,8 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 							foreach ( $series as $key => $series_data ) {
 								$series[ $key ][0] = $series_data[0] + $offset;
 								$count = $series[ $key ][2];								
-							}								
+							}
+														
 							$country_name = WC()->countries->countries[ $country ];
 							echo '{
 									label: "' . esc_js( $country_name ) . '",
@@ -324,6 +371,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 									prepend_label: true
 								},';
 							$index++;
+							if($index == $max_data) break;
 						}
 					?>
 				];
@@ -380,11 +428,13 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				var series = [
 					<?php
 					$index = 0;
+					$max_data = 10;
 					foreach ( $export_array as $country => $data ) {
 						$country_name = WC()->countries->countries[ $country ];
 						$color  = isset( $this->chart_colours[ $index ] ) ? $this->chart_colours[ $index ] : $this->chart_colours[0];
 						echo "{\n     label: \"$country_name\",\n     data: order_data.$country,\n  color: \"$color\",\n   enable_tooltip: true,\n  prepend_label: true\n },";
 						$index++;
+						if($index == $max_data) break;
 					}
 					?>
 				];				
@@ -512,7 +562,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		$widgets = array();		
 		
 		$widgets[] = array(
-			'title'    => __( 'Top Countries', 'woo-sales-country-reports' ),
+			'title'    => __( 'Top 10 Countries', 'woo-sales-country-reports' ),
 			'callback' => array( $this, 'top_country_widget' ),
 		);
 		
@@ -527,6 +577,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	
 	public function top_country_widget() {
 		$data = $this->get_report_data();
+	
 		foreach ( $data->orders as $location_values ) {
 			
 			if ( '' == $location_values->countries_data ) {
@@ -536,8 +587,9 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;
 			
 			$country_order_count[ $location_values->countries_data ] = $country_order_count[ $location_values->countries_data ] + $location_values->count;		
-			$export_data[ $location_values->countries_data ][] = $location_values;
+			$export_data[ $location_values->countries_data ][] = $location_values;			
 		}		
+		arsort($country_data);		
 		?>
 			<table class="sales-country-table widefat fixed posts">
                 <thead>
@@ -551,6 +603,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
                 <tbody>
                 <?php 
 				$index = 0;
+				$max_data=10;
 				foreach ( $country_data as $key=>$value ) :				
 				$percentage = ( round( $value, 2 ) / $this->total ) * 100;				
 				$color  = isset( $this->chart_colours[ $index ] ) ? $this->chart_colours[ $index ] : $this->chart_colours[0];
@@ -562,6 +615,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 					</tr>
                 <?php 
 				$index++;
+				if($index==$max_data) break; 
 				endforeach; ?>
                 </tbody>
             </table>
@@ -569,7 +623,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	
 	public function country_region_widget(){
 		$data = $this->get_report_data();
-		foreach ( $data->orders as $location_values ) {
+		foreach ( $data->c_orders as $location_values ) {
 		
 			if ( '' == $location_values->countries_data ) {
 				$location_values->countries_data = 'UNDEFINED';
@@ -578,23 +632,24 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;
 		
 			$export_data[ $location_values->countries_data ][] = $location_values;
-		}
-		$country = WC()->countries->countries[ 'IN' ];
-		if(!($this->show_countries)){			
-			foreach($data->orders as $key=>$value){
-				$this->show_countries[$key] = $value->countries_data;
-			}
-		}
-		
+		}				
+		arsort($country_data);	
 		?>
 		<h4 class="section_title"><span><?php esc_html_e( 'Sales by country', 'woo-sales-country-reports' ); ?></span></h4>
 		<div class="section">
 			<form method="GET">
 				<div>
 					<select multiple="multiple" data-placeholder="<?php esc_attr_e( 'Select country&hellip;', 'woo-sales-country-reports' ); ?>" class="wc-enhanced-select" id="show_countries" name="show_countries[]" style="width: 205px;">
-						<?php foreach($country_data as $key=>$value){ ?>
+						<?php 
+						$index = 0;
+						$max_data=10;
+						foreach($country_data as $key=>$value){ ?>
 							<option value="<?php echo $key; ?>" <?php if (in_array($key, $this->show_countries)) {echo 'selected'; } ?>><?php echo WC()->countries->countries[ $key ]; ?></option>
-						<?php } ?>
+						<?php 
+						$index++;
+						if($index==$max_data) break; 
+						}						
+						?>
 					</select>
 					<?php // @codingStandardsIgnoreStart ?>
 					<a href="#" class="select_none"><?php esc_html_e( 'None', 'woo-sales-country-reports' ); ?></a>
@@ -687,13 +742,13 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				return false;
 			});
 			jQuery('.section').slideUp( 100, function() {
-				<?php if ( !empty( $this->show_country ) ) {?>
+				<?php /*if ( !empty( $this->show_country ) ) {?>
 					jQuery('.section_title:eq(0)').click();
 				<?php } elseif(!empty( $this->show_region )){ ?>
 					jQuery('.section_title:eq(1)').click();
 				<?php } else{ ?>
 					jQuery('.section_title:eq(0)').click();	
-				<?php } ?>				
+				<?php }*/ ?>				
 			});
 		</script>
 		<?php
