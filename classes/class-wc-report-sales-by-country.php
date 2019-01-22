@@ -237,17 +237,19 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		$export_data = array();
 
 		foreach ( $data->orders as $location_values ) {
-
+			
 			if ( '' == $location_values->countries_data ) {
 				$location_values->countries_data = 'UNDEFINED';
-			}
-
+			}			
+			
 			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;					
 			
 			$export_data[ $location_values->countries_data ][] = $location_values;
 		}
 		arsort($country_data);
+		
 		$index = 0;
+		$country_sort_order = array();
 		foreach($country_data as $country=>$sales){
 			$country_sort_order[$index] = $country;
 			$index++;
@@ -265,7 +267,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$export_data[ $location_values->countries_data ][] = $location_values;
 		}			
 		$count_placeholder = __( 'This is the count of orders during this period.', 'woo-sales-country-reports' );
-		$export_data = array_merge(array_flip($country_sort_order), $export_data);
+		$export_data = array_merge(array_flip((array)$country_sort_order), $export_data);
 		
 		//Pass the data to the screen.
 		$this->location_data = $country_data;		
@@ -285,22 +287,19 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		
 		$legend[] = array(
 			'title' => sprintf( __( '%s orders in this period', 'woo-sales-country-reports' ), '<strong>' . $total . '</strong>' ),
-			'placeholder' => $placeholder,
-			'color' => $this->chart_colours['order_total'],
+			'placeholder' => $placeholder,			
 			'highlight_series' => 1,
 		);
 		
 		$legend[] = array(
 			'title' => sprintf( __( '%s orders in this period', 'woo-sales-country-reports' ), '<strong>' . $count_total . '</strong>' ),
-			'placeholder' => $count_placeholder,
-			'color' => $this->chart_colours['order_total'],
+			'placeholder' => $count_placeholder,			
 			'highlight_series' => 1,
 		);
 
 		$legend[] = array(
 			'title' => sprintf( __( '%s countries in this period', 'woo-sales-country-reports' ), '<strong>' . ( isset( $country_data['UNDEFINED'] ) ? count( $country_data ) - 1 :count( $country_data ) ) . '</strong>' ),
-			'placeholder' => __( 'This is the total number of countries represented in this report.', 'woo-sales-country-reports' ),
-			'color' => $this->chart_colours['individual_total'],
+			'placeholder' => __( 'This is the total number of countries represented in this report.', 'woo-sales-country-reports' ),			
 			'highlight_series' => 2,
 		);
 
@@ -347,10 +346,9 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 							$series = $export_array[$country];
 							
 							foreach ( $series as $key => $series_data ) {
-								$series[ $key ][0] = $series_data[0] + $offset;
-								$count = $series[ $key ][2];								
-							}
-														
+								$series[ $key ][0] = $series_data[0] + $offset;								
+								//$count = $series[ $key ][2];								
+							}							
 							$country_name = WC()->countries->countries[ $country ];
 							echo '{
 									label: "' . esc_js( $country_name ) . '",
@@ -541,9 +539,8 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 
 			if ( ! isset( $prepared_data[ $time ] ) ) {
 				continue;
-			}
-			
-			if ( $data_key ) {
+			}			
+			if ( isset($d->$data_key) ) {
 				$prepared_data[ $time ][1] += $d->$data_key;
 			} else {
 				$prepared_data[ $time ][1] ++;
@@ -577,18 +574,20 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	
 	public function top_country_widget() {
 		$data = $this->get_report_data();
+		$country_order_count = array();
+		$country_data = array();
 	
-		foreach ( $data->orders as $location_values ) {
-			
+		foreach ( $data->orders as $location_values ) {			
 			if ( '' == $location_values->countries_data ) {
 				$location_values->countries_data = 'UNDEFINED';
 			}
-		
-			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;
-			
-			$country_order_count[ $location_values->countries_data ] = $country_order_count[ $location_values->countries_data ] + $location_values->count;		
-			$export_data[ $location_values->countries_data ][] = $location_values;			
-		}		
+			$countries_data = $location_values->countries_data;	
+			$total_sales = $location_values->total_sales;
+			$country_data[ $countries_data ] = ( isset( $country_data[ $countries_data ] ) ) ? $total_sales + $country_data[ $countries_data ] : $total_sales;		
+
+			$country_order_count[ $countries_data ] = ( isset( $country_order_count[ $countries_data ] ) ) ? $location_values->count + $country_order_count[ $countries_data ] : $location_values->count;	
+			$export_data[ $countries_data ][] = $location_values;			
+		}
 		arsort($country_data);		
 		?>
 			<table class="sales-country-table widefat fixed posts">
@@ -623,6 +622,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	
 	public function country_region_widget(){
 		$data = $this->get_report_data();
+		$country_data = array();
 		foreach ( $data->c_orders as $location_values ) {
 		
 			if ( '' == $location_values->countries_data ) {
@@ -632,8 +632,10 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$country_data[ $location_values->countries_data ] = ( isset( $country_data[ $location_values->countries_data ] ) ) ? $location_values->total_sales + $country_data[ $location_values->countries_data ] : $location_values->total_sales;
 		
 			$export_data[ $location_values->countries_data ][] = $location_values;
-		}				
-		arsort($country_data);	
+		}
+		if(isset($country_data)){
+			arsort($country_data);	
+		}		
 		?>
 		<h4 class="section_title"><span><?php esc_html_e( 'Sales by country', 'woo-sales-country-reports' ); ?></span></h4>
 		<div class="section">
@@ -648,7 +650,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 						<?php 
 						$index++;
 						if($index==$max_data) break; 
-						}						
+						}					
 						?>
 					</select>
 					<?php // @codingStandardsIgnoreStart ?>
