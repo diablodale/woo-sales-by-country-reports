@@ -187,7 +187,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	 * @since 1.0
 	 */
 	public function get_chart_legend() {
-
+		global $wp_locale;
 		$this->location_by   = ( isset( $_REQUEST['location_filter'] ) ? sanitize_text_field($_REQUEST['location_filter']) : 'shipping' );
 		$this->totals_by     = ( isset( $_REQUEST['report_by'] ) ? sanitize_text_field($_REQUEST['report_by']) : 'order-total' );
 		$this->report_type     = ( isset( $_REQUEST['report_type'] ) ? sanitize_text_field($_REQUEST['report_type']) : 'chart' );
