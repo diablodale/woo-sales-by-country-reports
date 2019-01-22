@@ -22,6 +22,9 @@ This plugin simply adds a report tab to display sales report by country WooComme
 
 == Changelog ==
 
+= 1.2 =
+* Bug fixed
+
 = 1.1 =
 * Show only top 10 countries
 * Bug fixed
