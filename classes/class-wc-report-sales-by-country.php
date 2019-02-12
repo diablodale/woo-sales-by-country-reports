@@ -286,7 +286,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		}
 		
 		$legend[] = array(
-			'title' => sprintf( __( '%s orders in this period', 'woo-sales-country-reports' ), '<strong>' . $total . '</strong>' ),
+			'title' => sprintf( __( '%s sales in this period', 'woo-sales-country-reports' ), '<strong>' . $total . '</strong>' ),
 			'placeholder' => $placeholder,			
 			'highlight_series' => 1,
 		);
@@ -310,11 +310,12 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		foreach ( $export_data as $country => $data ) {
 			
 			$export_prep = $this->prepare_chart_data( $data, 'post_date', $report_type, $this->chart_interval, $this->start_date, $this->chart_groupby );
+			
 			$export_array[ $country ] = array_values( $export_prep );
 			
 		}
 		
-		//arsort($export_array);
+		
 		// Move undefined to the end of the data
 		if ( isset( $export_array['UNDEFINED'] ) ) {
 			$temp = $export_array['UNDEFINED'];
@@ -326,228 +327,217 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		$chart_data = json_encode( $export_array );	
 		$report_type = $this->report_type;
 		
-		if($report_type == 'chart'){
-		?>
+		
+		?>				
 		<script type="text/javascript">
-			var main_chart;
-
-			jQuery(function(){
-				var order_data = jQuery.parseJSON( '<?php echo $chart_data; ?>' );
-				var series = [
-					<?php
+			 AmCharts.makeChart("chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "country",
+					"startDuration": 1,
+					"handDrawScatter": 4,
+					"theme": "light",
+					"categoryAxis": {
+						"autoRotateAngle": 61.2,
+						"autoRotateCount": 0,
+						"autoWrap": true,
+						"gridPosition": "start",
+						"minHorizontalGap": 78,
+						"offset": 1
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"balloonText": " [[country]] : <?php echo get_woocommerce_currency_symbol(); ?>[[value]]",
+							"bulletBorderThickness": 7,
+							"colorField": "color",
+							"fillAlphas": 1,
+							"id": "AmGraph-1",
+							"lineColorField": "color",
+							"title": "graph 1",
+							"type": "column",
+							"valueField": "sales"
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-1",
+							"title": ""
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"titles": [
+						{
+							"id": "Title-1",
+							"size": 15,
+							"text": ""
+						}
+					],
+					"dataProvider": [
+						<?php
+												
 						$index = 0;
 						$max_data = 10;
-						
-						foreach ( $export_array as $country => $data ) {
-							
-							$color  = isset( $this->chart_colours[ $index ] ) ? $this->chart_colours[ $index ] : $this->chart_colours[0];
-							$width  = $this->barwidth / sizeof( $export_array );
-							$offset = ( $width * $index );
-							$series = $export_array[$country];
-							
-							foreach ( $series as $key => $series_data ) {
-								$series[ $key ][0] = $series_data[0] + $offset;								
-								//$count = $series[ $key ][2];								
-							}							
-							$country_name = WC()->countries->countries[ $country ];
-							echo '{
-									label: "' . esc_js( $country_name ) . '",
-									data: jQuery.parseJSON( "' . json_encode( $series ) . '" ),
-									color: "' . $color . '",
-									bars: {
-										fillColor: "' . $color . '",
-										fill: true,
-										show: true,
-										lineWidth: 1,
-										align: "center",
-										barWidth: ' . $width * 0.75 . ',
-										stack: false
-									},
-									' . $this->get_currency_tooltip() . ',
-									append_tooltip: "",
-									enable_tooltip: true,
-									prepend_label: true
-								},';
-							$index++;
-							if($index == $max_data) break;
-						}
-					?>
-				];
-				main_chart = jQuery.plot(
-					jQuery('.chart-placeholder.main'),
-						series,
-					{
-						legend: {
-							show: true
-						},
-						grid: {
-							color: '#aaa',
-							borderColor: 'transparent',
-							borderWidth: 0,
-							hoverable: true
-						},
-						xaxes: [ {
-							color: '#aaa',
-							reserveSpace: true,
-							position: "bottom",
-							tickColor: 'transparent',
-							mode: "time",
-							timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
-							monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
-							tickLength: 1,
-							minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
-							tickSize: [1, "<?php echo $this->chart_groupby; ?>"],
-							font: {
-								color: "#aaa"
-							}
-						} ],
-						yaxes: [
+						foreach($country_data as $key=>$value){ ?>
 							{
-								min: 0,
-								tickDecimals: 2,
-								color: 'transparent',
-								font: { color: "#aaa" }
-							}
-						],
+								"country": "<?php echo trim(preg_replace('/\s*\([^)]*\)/', '', WC()->countries->countries[ $key ]));  ?>",
+								"sales": <?php echo $value; ?>,
+								"color": "<?php echo $this->chart_colours[$index]; ?>"
+							},
+						<?php $index++;
+								if($index==$max_data) break;
+						} ?>
+					]					
+				}
+			);
+		</script>						
+		<!-- amCharts javascript code -->
+		<script type="text/javascript">
+			var country_chart = AmCharts.makeChart("graph_chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "country",
+					"startDuration": 1,
+					"fontSize": 13,
+					"theme": "light",
+					"categoryAxis": {
+						"autoRotateAngle": 61.2,
+						"autoRotateCount": 0,
+						"autoWrap": true,
+						"gridPosition": "start",
+						"minHorizontalGap": 78,
+						"offset": 1
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"balloonText": "[[country]]:<?php echo get_woocommerce_currency_symbol(); ?>[[value]]",
+							"bullet": "round",
+							"id": "AmGraph-1",
+							"title": "graph 1",
+							"valueField": "sales",
+							"visibleInLegend": false
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"id": "ValueAxis-1",
+							"title": ""
+						}
+					],
+					"allLabels": [],
+					"balloon": {},
+					"legend": {
+						"enabled": true,
+						"useGraphSettings": true
+					},
+					"titles": [
+						{
+							"id": "Title-1",
+							"size": 15,
+							"text": ""
+						}
+					],
+					"dataProvider": [
+						<?php
+												
+						$index = 0;
+						$max_data = 10;
+						foreach($country_data as $key=>$value){ ?>
+							{
+								"country": "<?php echo trim(preg_replace('/\s*\([^)]*\)/', '', WC()->countries->countries[ $key ]));  ?>",
+								"sales": <?php echo $value; ?>
+							},
+						<?php $index++;
+								if($index==$max_data) break;
+						} ?>					
+					],
+					"export": {
+						"enabled": true,
+						"menu": []
 					}
-					);
-			});
-
+				}
+			);
+		</script>		
+		
+		<script type="text/javascript">
+			AmCharts.makeChart("pie_chartdiv",
+				{
+					"type": "pie",
+					"angle": 16.2,
+					"balloonText": "[[title]]<br><span style='font-size:14px'><b><?php echo get_woocommerce_currency_symbol(); ?>[[value]]</b> ([[percents]]%)</span>",
+					"depth3D": 15,
+					"colors": [
+						"#3498db",
+						"#34495e",
+						"#1abc9c",
+						"#ff0000",
+						"#f1c40f",
+						"#e67e22",
+						"#e74c3c",
+						"#2980b9",
+						"#8e44ad",
+						"#2c3e50",
+						"#16a085",
+						"#27ae60",
+						"#f39c12",
+						"#d35400",
+						"#c0392b",
+						"#AF2460",
+						"#E761BD",
+						"#7E05A3",
+						"#91EFF7",
+						"#C0CE13",
+						"#102992",
+						"#EF0FD0",
+						"#916B7B",
+						"#94C52D",
+						"#C41D18",
+						"#5DF12B",
+						"#1D90FC",
+						"#C68656",
+						"#6DE821",
+						"#11CADA",
+						"#FA17F0",
+						"#CBDD3C"
+					],
+					"titleField": "category",
+					"valueField": "column-1",
+					"theme": "light",
+					"allLabels": [],
+					"balloon": {},
+					"titles": [],
+					"dataProvider": [
+						<?php
+												
+						$index = 0;
+						$max_data = 10;
+						foreach($country_data as $key=>$value){ ?>
+							{
+								"category": "<?php echo $key; ?>",
+								"column-1": <?php echo $value; ?>
+							},
+						<?php $index++;
+								if($index==$max_data) break;
+						} ?>
+					]
+				}
+			);
+			function exportCSV() {
+				country_chart.export.toCSV({}, function(data) {
+					this.download(data, this.defaults.formats.CSV.mimeType, "country_report.csv");
+				});
+			}
 		</script>
 		<?php 
-		} else{
-		?>
-		<script type="text/javascript">
-			var main_chart;
-
-			jQuery(function(){
-				var order_data = jQuery.parseJSON( '<?php echo $chart_data; ?>' );
-
-				var series = [
-					<?php
-					$index = 0;
-					$max_data = 10;
-					foreach ( $export_array as $country => $data ) {
-						$country_name = WC()->countries->countries[ $country ];
-						$color  = isset( $this->chart_colours[ $index ] ) ? $this->chart_colours[ $index ] : $this->chart_colours[0];
-						echo "{\n     label: \"$country_name\",\n     data: order_data.$country,\n  color: \"$color\",\n   enable_tooltip: true,\n  prepend_label: true\n },";
-						$index++;
-						if($index == $max_data) break;
-					}
-					?>
-				];				
-				main_chart = jQuery.plot(
-					jQuery('.chart-placeholder.main'),
-						series,
-					{
-						legend: {
-							show: true
-						},
-						grid: {
-							color: '#aaa',
-							borderColor: 'transparent',
-							borderWidth: 0,
-							hoverable: true
-						},
-						xaxes: [ {
-							color: '#aaa',
-							reserveSpace: true,
-							position: "bottom",
-							tickColor: 'transparent',
-							mode: "time",
-							timeformat: "<?php echo ( 'day' === $this->chart_groupby ) ? '%d %b' : '%b'; ?>",
-							monthNames: <?php echo json_encode( array_values( $wp_locale->month_abbrev ) ); ?>,
-							tickLength: 1,
-							minTickSize: [1, "<?php echo $this->chart_groupby; ?>"],
-							tickSize: [1, "<?php echo $this->chart_groupby; ?>"],
-							font: {
-								color: "#aaa"
-							}
-						} ],
-						yaxes: [
-							{
-								min: 0,
-								tickDecimals: 2,
-								color: 'transparent',
-								font: { color: "#aaa" }
-							}
-						],
-					}
-					);
-			});
-
-		</script>		
-		<?php
-		}	
 		/* / Export Code */
 
 		return $legend;
 	}
-	/**
-	 * Put data with post_date's into an array of times.
-	 *
-	 * @param  array  $data array of your data
-	 * @param  string $date_key key for the 'date' field. e.g. 'post_date'
-	 * @param  string $data_key key for the data you are charting
-	 * @param  int    $interval
-	 * @param  string $start_date
-	 * @param  string $group_by
-	 * @return array
-	 */
-	public function prepare_chart_data( $data, $date_key, $data_key, $interval, $start_date, $group_by ) {
-		$prepared_data = array();
-			
-		// Ensure all days (or months) have values in this range.
-		if ( 'day' === $group_by ) {
-			for ( $i = 0; $i <= $interval; $i ++ ) {
-				$time = strtotime( date( 'Ymd', strtotime( "+{$i} DAY", $start_date ) ) ) . '000';
-
-				if ( ! isset( $prepared_data[ $time ] ) ) {
-					$prepared_data[ $time ] = array( esc_js( $time ), 0 );
-				}
-			}
-		} else {
-			$current_yearnum  = date( 'Y', $start_date );
-			$current_monthnum = date( 'm', $start_date );
-
-			for ( $i = 0; $i <= $interval; $i ++ ) {
-				$time = strtotime( $current_yearnum . str_pad( $current_monthnum, 2, '0', STR_PAD_LEFT ) . '01' ) . '000';
-
-				if ( ! isset( $prepared_data[ $time ] ) ) {
-					$prepared_data[ $time ] = array( esc_js( $time ), 0 );
-				}
-
-				$current_monthnum ++;
-
-				if ( $current_monthnum > 12 ) {
-					$current_monthnum = 1;
-					$current_yearnum  ++;
-				}
-			}
-		}
-
-		foreach ( $data as $d ) {
-			switch ( $group_by ) {
-				case 'day':
-					$time = strtotime( date( 'Ymd', strtotime( $d->$date_key ) ) ) . '000';
-					break;
-				case 'month':
-				default:
-					$time = strtotime( date( 'Ym', strtotime( $d->$date_key ) ) . '01' ) . '000';
-					break;
-			}
-
-			if ( ! isset( $prepared_data[ $time ] ) ) {
-				continue;
-			}			
-			if ( isset($d->$data_key) ) {
-				$prepared_data[ $time ][1] += $d->$data_key;
-			} else {
-				$prepared_data[ $time ][1] ++;
-			}
-		}		
-		return $prepared_data;
-	}
+	
 	/**
 	 * Add our map widgets to the report screen
 	 *
@@ -593,9 +583,10 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			<table class="sales-country-table widefat fixed posts">
                 <thead>
                     <tr>
-                        <th>Country</th>
-                        <th>Sales</th>
-						<th># of orders </th>
+                        <th><?php esc_html_e( 'Country', 'woo-sales-country-reports' ); ?></th>
+                        <th><?php esc_html_e( 'Sales', 'woo-sales-country-reports' ); ?></th>
+						<th><?php esc_html_e( '# of orders', 'woo-sales-country-reports' ); ?></th>
+						<th><?php esc_html_e( 'Avg orders amount', 'woo-sales-country-reports' ); ?></th>
                     </tr>
                 </thead>
 
@@ -608,9 +599,10 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 				$color  = isset( $this->chart_colours[ $index ] ) ? $this->chart_colours[ $index ] : $this->chart_colours[0];
 				?>
                     <tr>
-                        <td><?php echo WC()->countries->countries[ $key ]; ?></td>
-                        <td><?php echo get_woocommerce_currency_symbol() . round( $value, 2 ); ?> (<?php echo round( $percentage ); ?>%)</td>
-						<td style="border-right: 5px solid <?php echo $color; ?>;text-align:center;"><?php echo $country_order_count[$key]; ?></td>	                 
+                        <td><?php echo trim(preg_replace('/\s*\([^)]*\)/', '', WC()->countries->countries[ $key ])); ?></td>
+                        <td><?php echo get_woocommerce_currency_symbol() . number_format(round( $value )); ?> (<?php echo round( $percentage,1 ); ?>%)</td>
+						<td style=""><?php echo $country_order_count[$key]; ?></td>	
+						<td style="border-right: 5px solid <?php echo $color; ?>;"><?php echo round($value/$country_order_count[$key]); ?></td>							
 					</tr>
                 <?php 
 				$index++;
@@ -779,7 +771,8 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 
 		$this->calculate_current_range( $current_range );
 
-		include( WC()->plugin_path() . '/includes/admin/views/html-report-by-date.php' );
+		//include( WC()->plugin_path() . '/includes/admin/views/html-report-by-date.php' );
+		include 'html/html-report-by-date.php';
 
 	}
 
@@ -789,10 +782,9 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	 * @since 1.0
 	 */
 	public function get_export_button() {
-		$current_range = ! empty( $_GET['range'] ) ? sanitize_text_field( $_GET['range'] ) : '7day';
-		$report_type = ! empty( $_GET['report_type'] ) ? sanitize_text_field( $_GET['report_type'] ) : 'chart';		
+		$current_range = ! empty( $_GET['range'] ) ? sanitize_text_field( $_GET['range'] ) : '7day';			
 		?>			
-		<a
+		<!--a
 			href="#"
 			download="report-<?php echo esc_attr( $current_range ); ?>-<?php echo date_i18n( 'Y-m-d', current_time( 'timestamp' ) ); ?>.csv"
 			class="export_csv"
@@ -801,9 +793,13 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			data-groupby="<?php echo $this->chart_groupby; ?>"
 		>
 			<?php _e( 'Export CSV', 'woo-sales-country-reports' ); ?>
-		</a>
-		<a href="<?php echo add_query_arg( 'report_type', 'chart' ); ?>" class="report_type_link dashicons-before dashicons-chart-bar <?php if($report_type == 'chart'){ echo 'selected'; }?>"></a>
-		<a href="<?php echo add_query_arg( 'report_type', 'graph' ); ?>" class="report_type_link dashicons-before dashicons-chart-line <?php if($report_type == 'graph'){ echo 'selected'; }?>"></a>
+		</a-->
+		<a href="JavaScript:Void(0);" class="export_csv" onclick="exportCSV();">
+			<?php _e( 'Export CSV', 'woo-sales-country-reports' ); ?>
+		</a>		
+		<a href="JavaScript:Void(0);" class="report_type_tab report_type_link dashicons-before dashicons-chart-bar active" data-type="chartdiv"></a>
+		<a href="JavaScript:Void(0);" class="report_type_tab inactive report_type_link dashicons-before dashicons-chart-line inactive" data-type="graph_chartdiv"></a>
+		<a href="JavaScript:Void(0);" class="report_type_tab inactive report_type_link dashicons-before dashicons-chart-pie inactive" data-type="pie_chartdiv"></a>
 		<?php
 	}
 
@@ -812,12 +808,14 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 	 *
 	 * @since 1.0
 	 */
-	public function get_main_chart() {
-		global $wp_locale;			
-		?>
-		<div class="chart-container">
-			<div class="chart-placeholder main"></div>			
-		</div>
+	public function get_main_chart() { ?>		
+		
+		<div class="chart-container">			
+			<div id="chartdiv" class="bar_chart" style="width: 100%;height: 448px;"></div>
+			<div id="graph_chartdiv" class="bar_chart" style="width: 100%;height: 448px;display:none;"></div>
+			<div id="pie_chartdiv" class="bar_chart" style="width: 100%;height: 448px;display:none;"></div>	
+		</div>		
+		
 		<?php
 	}
 

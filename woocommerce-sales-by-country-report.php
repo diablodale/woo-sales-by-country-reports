@@ -4,7 +4,7 @@
  * Plugin Name: WooCommerce Sales Report By Country
  * Plugin URI:  http://www.zorem.com/shop
  * Description: This plugin simply adds a report tab to display sales report by country WooCommerce Reports. The plugin adds an additional report tab which display sales report by country. You’ll find this report available in WooCommerce reports section.
- * Version: 1.2
+ * Version: 1.3
  * Author:      zorem
  * Author URI:  http://www.zorem.com/
  * License:     GPL-2.0+
@@ -125,8 +125,18 @@ class WC_Country_Report {
 	/**
 	 * Load admin styles.
 	 */
-	public function admin_styles() {		
+	public static function admin_styles() {		
 		wp_enqueue_style( 'country_report_style', plugin_dir_url( __FILE__ ) . 'assets/css/admin.css' );
+
+		//amcharts js	
+		wp_enqueue_script( 'amcharts', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/amcharts.js' );
+		wp_enqueue_script( 'amcharts-light-theme', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/light.js' );
+		wp_enqueue_script( 'amcharts-pie', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/pie.js' );
+		wp_enqueue_script( 'amcharts-serial', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/serial.js' );
+		wp_enqueue_script( 'amcharts-export', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/export.js' );
+		
+		//Main js
+		wp_enqueue_script( 'sales-by-country-main-js', plugin_dir_url( __FILE__ ) . 'assets/js/script.js' );		
 	}
 
 	/**
