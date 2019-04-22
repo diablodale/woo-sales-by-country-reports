@@ -1,8 +1,8 @@
-=== WooCommerce Sales Report By Country ===
+=== Sales Report By Country for WooCommerce ===
 Contributors: zorem
 Tags: woocommerce, extension, reporting, analytics
 Requires at least: 3.8
-Tested up to: 5.0
+Tested up to: 5.1.1
 Stable tag: 1.0
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
@@ -21,6 +21,11 @@ This plugin simply adds a report tab to display sales report by country WooComme
 
 
 == Changelog ==
+
+= 1.4 =
+* WC compatibility added
+* Tested upto WordPress 5.1.1
+* Update plugin name
 
 = 1.3 =
 * Change UI
