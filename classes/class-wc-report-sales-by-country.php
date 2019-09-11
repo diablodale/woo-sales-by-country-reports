@@ -305,7 +305,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 
 		/* Export Code */
 		$export_array = array();
-		$report_type = ( 'number-orders' == $this->totals_by ) ? 'count' : 'total_sales';
+		$report_type = ( 'number-orders' == $this->totals_by ) ? 'count' : '';
 		
 		foreach ( $export_data as $country => $data ) {
 			
@@ -633,18 +633,18 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		<div class="section">
 			<form method="GET">
 				<div>
-					<select multiple="multiple" data-placeholder="<?php esc_attr_e( 'Select country&hellip;', 'woo-sales-country-reports' ); ?>" class="wc-enhanced-select" id="show_countries" name="show_countries[]" style="width: 205px;">
-						<?php 
-						$index = 0;
-						$max_data=10;
-						foreach($country_data as $key=>$value){ ?>
-							<option value="<?php echo $key; ?>" <?php if (in_array($key, $this->show_countries)) {echo 'selected'; } ?>><?php echo WC()->countries->countries[ $key ]; ?></option>
-						<?php 
-						$index++;
-						if($index==$max_data) break; 
-						}					
-						?>
-					</select>
+                        <select multiple="multiple" data-placeholder="<?php esc_attr_e( 'Select country&hellip;', 'woo-sales-country-reports' ); ?>" class="wc-enhanced-select" id="show_countries" name="show_countries[]" style="width: 205px;">
+                            <?php 
+                            $index = 0;
+                            $max_data=10;
+                            foreach($country_data as $key=>$value){ ?>
+                                <option value="<?php echo $key; ?>" <?php if (in_array($key, $this->show_countries)) {echo 'selected'; } ?>><?php echo WC()->countries->countries[ $key ]; ?></option>
+                            <?php 
+                            $index++;
+                            if($index==$max_data) break; 
+                            }					
+                            ?>
+                        </select>
 					<?php // @codingStandardsIgnoreStart ?>
 					<a href="#" class="select_none"><?php esc_html_e( 'None', 'woo-sales-country-reports' ); ?></a>
 					<a href="#" class="select_all"><?php esc_html_e( 'All', 'woo-sales-country-reports' ); ?></a>

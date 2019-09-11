@@ -22,6 +22,9 @@ This plugin simply adds a report tab to display sales report by country WooComme
 
 == Changelog ==
 
+= 1.6 =
+* Bug Fixed - undefined country sales warning
+
 = 1.5 =
 * Tested for WP 5.2
 
