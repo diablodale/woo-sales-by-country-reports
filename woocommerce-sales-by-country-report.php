@@ -10,7 +10,7 @@
  * License:     GPL-2.0+
  * License URI: http://www.zorem.com/
  * Text Domain: woo-sales-country-reports
- * WC tested up to: 3.6.1
+ * WC tested up to: 3.7.0
 **/
 
 if ( ! defined( 'ABSPATH' ) ) {
