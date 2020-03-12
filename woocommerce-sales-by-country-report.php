@@ -4,13 +4,13 @@
  * Plugin Name: Sales Report By Country for WooCommerce
  * Plugin URI:  https://www.zorem.com/shop/woocommerce-sales-report-by-country/
  * Description: This plugin simply adds a report tab to display sales report by country WooCommerce Reports. The plugin adds an additional report tab which display sales report by country. You’ll find this report available in WooCommerce reports section.
- * Version: 1.6.1
+ * Version: 1.6.2
  * Author:      zorem
  * Author URI:  http://www.zorem.com/
  * License:     GPL-2.0+
  * License URI: http://www.zorem.com/
  * Text Domain: woo-sales-country-reports
- * WC tested up to: 3.9.0
+ * WC tested up to: 4.0
 **/
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -38,7 +38,7 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
 class WC_Country_Report {
 
 	/** plugin version number */
-	public static $version = '1.4';
+	public static $version = '1.6.2';
 
 	/** @var string the plugin file */
 	public static $plugin_file = __FILE__;
@@ -67,7 +67,7 @@ class WC_Country_Report {
 		// Load translation files
 		add_action( 'plugins_loaded', __CLASS__ . '::load_plugin_textdomain' );
 		
-		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_styles' ,4);
+		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_styles', 4 );
 		
 		register_activation_hook( __FILE__, __CLASS__ . '::woo_sales_country_report_install');
 
@@ -149,12 +149,12 @@ class WC_Country_Report {
 	 *
 	 * 
 	*/	
-	 public function woo_sales_country_report_install(){
+	 public static function woo_sales_country_report_install(){
 		
 		global $wpdb;	
 		
 		$woo_sales_country_table_name = $wpdb->prefix . 'woo_sales_country_region';
-		//echo $woo_sales_country_table_name;exit;
+
 		// create the ECPT metabox database table
 		if($wpdb->get_var("show tables like '$woo_sales_country_table_name'") != $woo_sales_country_table_name) 
 		{
@@ -166,9 +166,10 @@ class WC_Country_Report {
 				region varchar(500) DEFAULT '' NOT NULL,
 				PRIMARY KEY  (id)
 			) $charset_collate;";
-			//echo $sql;exit;
+
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			dbDelta( $sql );
+			
 			$country_list = array(
 				array(
 					"Region" => "Asia", 
@@ -607,9 +608,7 @@ class WC_Country_Report {
 					"Country" => "NP"), 
 				array(
 					"Region" => "West Europe", 
-					"Country" => "NL"), 
-				array(
-					"Region" => "South America"), 
+					"Country" => "NL"),
 				array(
 					"Region" => "Asia", 
 					"Country" => "NC"), 
@@ -845,7 +844,7 @@ class WC_Country_Report {
 					"Region" => "Africa", 
 					"Country" => "ZW")
 			);
-			
+
 			foreach($country_list as $country){								
 				$success = $wpdb->insert($woo_sales_country_table_name, array(
 					"country" => $country['Country'],
