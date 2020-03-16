@@ -4,7 +4,7 @@
  * Plugin Name: Sales Report By Country for WooCommerce
  * Plugin URI:  https://www.zorem.com/shop/woocommerce-sales-report-by-country/
  * Description: This plugin simply adds a report tab to display sales report by country WooCommerce Reports. The plugin adds an additional report tab which display sales report by country. You’ll find this report available in WooCommerce reports section.
- * Version: 1.6.2
+ * Version: 1.6.3
  * Author:      zorem
  * Author URI:  http://www.zorem.com/
  * License:     GPL-2.0+
@@ -38,7 +38,7 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
 class WC_Country_Report {
 
 	/** plugin version number */
-	public static $version = '1.6.2';
+	public static $version = '1.6.3';
 
 	/** @var string the plugin file */
 	public static $plugin_file = __FILE__;
