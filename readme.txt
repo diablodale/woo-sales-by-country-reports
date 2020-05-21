@@ -22,6 +22,10 @@ This plugin simply adds a report tab to display sales report by country WooComme
 
 == Changelog ==
 
+= 1.6.4 =
+* Added features to display report by Shipping/Billing Country
+* WC compatibility added upto 4.1
+
 = 1.6.3 =
 * WP tested upto 5.4
 * WC compatibility added upto 4.0

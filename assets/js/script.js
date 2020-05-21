@@ -14,3 +14,12 @@ jQuery( document ).ready(function() {
 		e.preventDefault();
 	});	
 });
+
+jQuery(document).on("change", "#salse_report_country_by", function(){
+	"use strict";
+    var value = jQuery(this).val();
+    var url = document.location.href;
+	window.location.search += "&report_country_by="+value;
+});
+  
+  

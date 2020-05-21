@@ -32,6 +32,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="stats_range">
 			<?php $this->get_export_button(); ?>
 			<ul>
+				<li class="custom" style="border-right: 1px solid #dfdfdf;">
+					<select class="select" id="salse_report_country_by" name="salse_report_country_by">
+					  <option value="shipping" selected="selected" >By Shipping Country</option>
+					  <option value="billing" <?php if ( isset($_GET['report_country_by']) && $_GET['report_country_by'] == 'billing' ){ echo "selected='selected'";}?> >By Billing Country</option>
+					</select>
+				</li>
 				<?php
 				foreach ( $ranges as $range => $name ) {
 					echo '<li class="' . ( $current_range == $range ? 'active' : '' ) . '"><a href="' . esc_url( remove_query_arg( array( 'start_date', 'end_date' ), add_query_arg( 'range', $range ) ) ) . '">' . esc_html( $name ) . '</a></li>';
@@ -64,6 +70,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 				</li>
 			</ul>
 		</div>
+		<?php 
+		
+		?>
 		<?php if ( empty( $hide_sidebar ) ) : ?>
 			<div class="inside chart-with-sidebar">
 				<?php if ( $legends = $this->get_chart_legend() ) : ?>
