@@ -77,9 +77,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<div class="inside chart-with-sidebar">
 				<?php if ( $legends = $this->get_chart_legend() ) : ?>
 					<ul class="chart-legend">
-						<?php foreach ( $legends as $legend ) : ?>
-							<?php // @codingStandardsIgnoreStart ?>
-							<li style="border-color: <?php echo $legend['color']; ?>" <?php if ( isset( $legend['highlight_series'] ) ) echo 'class="highlight_series ' . ( isset( $legend['placeholder'] ) ? 'tips' : '' ) . '" data-series="' . esc_attr( $legend['highlight_series'] ) . '"'; ?> data-tip="<?php echo isset( $legend['placeholder'] ) ? $legend['placeholder'] : ''; ?>">
+                    	<?php foreach ( $legends as $legend ) : ?>
+                    		<?php // @codingStandardsIgnoreStart ?>
+							<li style="border-color: <?php echo isset($legend['color']) ? $legend['color'] : '' ; ?>" <?php if ( isset( $legend['highlight_series'] ) ) echo 'class="highlight_series ' . ( isset( $legend['placeholder'] ) ? 'tips' : '' ) . '" data-series="' . esc_attr( $legend['highlight_series'] ) . '"'; ?> data-tip="<?php echo isset( $legend['placeholder'] ) ? $legend['placeholder'] : ''; ?>">
 								<?php echo $legend['title']; ?>
 							</li>
 							<?php // @codingStandardsIgnoreEnd ?>
