@@ -4,13 +4,13 @@
  * Plugin Name: Sales Report By Country for WooCommerce
  * Plugin URI:  https://www.zorem.com/shop/woocommerce-sales-report-by-country/
  * Description: This plugin simply adds a report tab to display sales report by country WooCommerce Reports. The plugin adds an additional report tab which display sales report by country. You’ll find this report available in WooCommerce reports section.
- * Version: 1.6.5
+ * Version: 1.6.6
  * Author:      zorem
  * Author URI:  http://www.zorem.com/
  * License:     GPL-2.0+
  * License URI: http://www.zorem.com/
  * Text Domain: woo-sales-country-reports
- * WC tested up to: 5.1
+ * WC tested up to: 7.1.0
 **/
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -38,7 +38,7 @@ if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins',
 class WC_Country_Report {
 
 	/** plugin version number */
-	public static $version = '1.6.5';
+	public static $version = '1.6.6';
 
 	/** @var string the plugin file */
 	public static $plugin_file = __FILE__;
@@ -71,8 +71,111 @@ class WC_Country_Report {
 		
 		register_activation_hook( __FILE__, __CLASS__ . '::woo_sales_country_report_install');
 
+		add_action( 'admin_notices', __CLASS__ . '::sales_report_by_country_admin_notice' );
+		add_action( 'admin_notices', __CLASS__ . '::sales_report_by_country_admin_notice_inside_reports' );	
+		add_action( 'admin_init', __CLASS__ . '::srbc_v_1_6_6_admin_notice_ignore' );
 	}
 
+	public static function sales_report_by_country_admin_notice() {
+		
+		if ( class_exists( 'Sales_Report_By_Country' ) ) {
+			return;
+		}
+		
+		if ( get_option('srbc_v_1_6_6_admin_notice_ignore') ) {
+			return;
+		}	
+		
+		$page = ( isset( $_REQUEST['page'] ) ? wc_clean( $_REQUEST['page'] ) : '' ); 
+		if ( 'wc-reports' == $page ) {
+			return;
+		}
+
+		$dismissable_url = esc_url(  add_query_arg( 'srbc-v-1-6-6-ignore-notice', 'true' ) );
+		?>		
+		<style>		
+		.wp-core-ui .notice.srbc-dismissable-notice{
+			position: relative;
+			padding-right: 38px;
+			border-left-color: #005B9A;
+		}
+		.wp-core-ui .notice.srbc-dismissable-notice h3{
+			margin-bottom: 5px;
+		} 
+		.wp-core-ui .notice.srbc-dismissable-notice a.notice-dismiss{
+			padding: 9px;
+			text-decoration: none;
+		} 
+		.wp-core-ui .button-primary.srbc_notice_btn {
+			background: #005B9A;
+			color: #fff;
+			border-color: #005B9A;
+			text-transform: uppercase;
+			padding: 0 11px;
+			font-size: 12px;
+			height: 30px;
+			line-height: 28px;
+			margin: 5px 0 15px;
+		}
+		</style>
+		<div class="notice updated notice-success srbc-dismissable-notice">	
+			<a href="<?php esc_html_e( $dismissable_url ); ?>" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></a>			
+			<h2 style="margin-bottom: 10px;">Sales Report By Country</h2>				
+			<p>We will soon retire the free Sales By Country report plugin and will remove it from WordPress.org. You can upgrade to the premium <a href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/" target="blank">Sales Report by Country</a> and view sales by country report in the WooCommerce Analytics. Use coupon <strong>SBCNEW50</strong> to get a 50% discount on the premium version (valid by 31/12/2022)</p>			
+			<a class="button-primary srbc_notice_btn" target="blank" href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/">Upgrade Now</a>			
+			<a class="button-primary srbc_notice_btn" href="<?php esc_html_e( $dismissable_url ); ?>">Dismiss</a>			
+		</div>	
+		<?php 
+	}
+
+	public static function sales_report_by_country_admin_notice_inside_reports() {
+		if ( class_exists( 'Sales_Report_By_Country' ) ) {
+			return;
+		}
+
+		$page = ( isset( $_REQUEST['page'] ) ? wc_clean( $_REQUEST['page'] ) : '' ); 
+		if ( 'wc-reports' != $page ) {
+			return;
+		}
+		?>
+		<style>		
+		.wp-core-ui .notice.srbc-dismissable-notice{
+			position: relative;
+			padding-right: 38px;
+			border-left-color: #005B9A;
+		}
+		.wp-core-ui .notice.srbc-dismissable-notice h3{
+			margin-bottom: 5px;
+		} 
+		.wp-core-ui .notice.srbc-dismissable-notice a.notice-dismiss{
+			padding: 9px;
+			text-decoration: none;
+		} 
+		.wp-core-ui .button-primary.srbc_notice_btn {
+			background: #005B9A;
+			color: #fff;
+			border-color: #005B9A;
+			text-transform: uppercase;
+			padding: 0 11px;
+			font-size: 12px;
+			height: 30px;
+			line-height: 28px;
+			margin: 5px 0 15px;
+		}
+		</style>
+		<div class="notice updated notice-success srbc-dismissable-notice">			
+			<h2 style="margin-bottom: 10px;">Sales Report By Country</h2>				
+			<p>We will soon retire the free Sales By Country report plugin and will remove it from WordPress.org. You can upgrade to the premium <a href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/" target="blank">Sales Report by Country</a> and view sales by country report in the WooCommerce Analytics. Use coupon <strong>SBCNEW50</strong> to get a 50% discount on the premium version (valid by 31/12/2022)</p>			
+			<a class="button-primary srbc_notice_btn" target="blank" href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/">Upgrade Now</a>					
+		</div>
+		<?php
+	}
+
+	public static function srbc_v_1_6_6_admin_notice_ignore() {
+		if ( isset( $_GET['srbc-v-1-6-6-ignore-notice'] ) ) {
+			update_option( 'srbc_v_1_6_6_admin_notice_ignore', 'true' );
+		}	
+	}
 
 	/**
 	 * Add our location report to the WooCommerce order reports array.
