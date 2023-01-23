@@ -22,6 +22,10 @@ This plugin simply adds a report tab to display sales report by country WooComme
 
 == Changelog ==
 
+= 1.6.7 =
+* WC compatibility added upto 7.3.0
+* Added an admin notice for upgrade to the premium Sales Report by Country
+
 = 1.6.6 =
 * WP tested upto 6.1.1
 * WC compatibility added upto 7.1.0
