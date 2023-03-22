@@ -70,6 +70,7 @@ class WC_Country_Report {
 		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_styles', 4 );
 
 		register_activation_hook( __FILE__, __CLASS__ . '::woo_sales_country_report_install');
+        register_deactivation_hook( __FILE__, __CLASS__ . '::woo_sales_country_report_uninstall');
 	}
 
 	/**
@@ -137,6 +138,16 @@ class WC_Country_Report {
 		//Main js
 		wp_enqueue_script( 'sales-by-country-main-js', plugin_dir_url( __FILE__ ) . 'assets/js/script.js' );
 	}
+
+    /**
+	 * Define plugin deactivation function
+	 *
+	 * Drop Table
+	 */
+    public static function woo_sales_country_report_uninstall(){
+        global $wpdb;
+        $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}woo_sales_country_region;" );
+    }
 
 	/**
 	 * Define plugin activation function
