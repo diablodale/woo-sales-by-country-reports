@@ -56,7 +56,7 @@ class WC_Country_Report {
 
 		global $wpdb;
 
-		self::$plugin_dir = dirname( __FILE__ );			
+		self::$plugin_dir = dirname( __FILE__ );
 
 		// Add the reports layout to the WooCommerce -> Reports admin section
 		add_filter( 'woocommerce_admin_reports',  __CLASS__ . '::initialize_country_admin_report', 12, 1 );
@@ -66,125 +66,10 @@ class WC_Country_Report {
 
 		// Load translation files
 		add_action( 'plugins_loaded', __CLASS__ . '::load_plugin_textdomain' );
-		
+
 		add_action( 'admin_enqueue_scripts', __CLASS__ . '::admin_styles', 4 );
-		
+
 		register_activation_hook( __FILE__, __CLASS__ . '::woo_sales_country_report_install');
-
-		add_action( 'admin_notices', __CLASS__ . '::sales_report_by_country_admin_notice' );
-		add_action( 'admin_notices', __CLASS__ . '::sales_report_by_country_admin_notice_inside_reports' );	
-		add_action( 'admin_init', __CLASS__ . '::srbc_v_1_6_6_admin_notice_ignore' );
-	}
-
-	public static function sales_report_by_country_admin_notice() {
-		
-		if ( class_exists( 'Sales_Report_By_Country' ) ) {
-			return;
-		}
-		
-		if ( get_option('srbc_v_1_6_7_admin_notice_ignore') ) {
-			return;
-		}	
-		
-		$page = ( isset( $_REQUEST['page'] ) ? wc_clean( $_REQUEST['page'] ) : '' ); 
-		if ( 'wc-reports' == $page ) {
-			return;
-		}
-
-		$dismissable_url = esc_url(  add_query_arg( 'srbc-v-1-6-7-ignore-notice', 'true' ) );
-		?>		
-		<style>		
-		.wp-core-ui .notice.srbc-dismissable-notice{
-			position: relative;
-			padding-right: 38px;
-			border-left-color: #005B9A;
-		}
-		.wp-core-ui .notice.srbc-dismissable-notice h3{
-			margin-bottom: 5px;
-		} 
-		.wp-core-ui .notice.srbc-dismissable-notice a.notice-dismiss{
-			padding: 9px;
-			text-decoration: none;
-		} 
-		.wp-core-ui .button-primary.srbc_notice_btn {
-			background: #005B9A;
-			color: #fff;
-			border-color: #005B9A;
-			text-transform: uppercase;
-			padding: 0 11px;
-			font-size: 12px;
-			height: 30px;
-			line-height: 28px;
-			margin: 5px 0 15px;
-		}
-		</style>
-		<div class="notice updated notice-success srbc-dismissable-notice">	
-			<a href="<?php esc_html_e( $dismissable_url ); ?>" class="notice-dismiss"><span class="screen-reader-text">Dismiss this notice.</span></a>			
-			<h2 style="margin-bottom: 10px;">Important Update!</h2>				
-			<p>We regret to inform you that we will be retiring the <strong>Sales Report by Country</strong> plugin on 31/01/2023 since the WooCommerce report was moved to Analytics. We want to thank you for your support of the plugin over the years.</p>
-			<p>As a way to show our appreciation, we are offering a <strong>50% discount</strong> on the <a target="blank" href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/">PRO</a> version of the plugin that works on the WooCommerce Analytics. </p>
-			<p>Use code <strong>SBCNEW50</strong> in checkout to receive the discount.</p>
-			<p>This is a limited time offer until 15/02/2023, so take advantage of it before it's too late.</p>
-			<p>Thank you for choosing our plugin and we apologize for any inconvenience this may cause.</p>
-			<p>Best regards, zorem</p>
-			<a class="button-primary srbc_notice_btn" target="blank" href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/">Upgrade Now</a>			
-			<a class="button-primary srbc_notice_btn" href="<?php esc_html_e( $dismissable_url ); ?>">Dismiss</a>			
-		</div>	
-		<?php 
-	}
-
-	public static function sales_report_by_country_admin_notice_inside_reports() {
-		if ( class_exists( 'Sales_Report_By_Country' ) ) {
-			return;
-		}
-
-		$page = ( isset( $_REQUEST['page'] ) ? wc_clean( $_REQUEST['page'] ) : '' ); 
-		if ( 'wc-reports' != $page ) {
-			return;
-		}
-		?>
-		<style>		
-		.wp-core-ui .notice.srbc-dismissable-notice{
-			position: relative;
-			padding-right: 38px;
-			border-left-color: #005B9A;
-		}
-		.wp-core-ui .notice.srbc-dismissable-notice h3{
-			margin-bottom: 5px;
-		} 
-		.wp-core-ui .notice.srbc-dismissable-notice a.notice-dismiss{
-			padding: 9px;
-			text-decoration: none;
-		} 
-		.wp-core-ui .button-primary.srbc_notice_btn {
-			background: #005B9A;
-			color: #fff;
-			border-color: #005B9A;
-			text-transform: uppercase;
-			padding: 0 11px;
-			font-size: 12px;
-			height: 30px;
-			line-height: 28px;
-			margin: 5px 0 15px;
-		}
-		</style>
-		<div class="notice updated notice-success srbc-dismissable-notice">			
-			<h2 style="margin-bottom: 10px;">Important Update!</h2>				
-			<p>We regret to inform you that we will be retiring the <strong>Sales Report by Country</strong> plugin on 31/01/2023 since the WooCommerce report was moved to Analytics. We want to thank you for your support of the plugin over the years.</p>
-			<p>As a way to show our appreciation, we are offering a <strong>50% discount</strong> on the <a target="blank" href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/">PRO</a> version of the plugin that works on the WooCommerce Analytics. </p>
-			<p>Use code <strong>SBCNEW50</strong> in checkout to receive the discount.</p>
-			<p>This is a limited time offer until 15/02/2023, so take advantage of it before it's too late.</p>
-			<p>Thank you for choosing our plugin and we apologize for any inconvenience this may cause.</p>
-			<p>Best regards, zorem</p>		
-			<a class="button-primary srbc_notice_btn" target="blank" href="https://www.zorem.com/product/sales-report-by-country-for-woocommerce/">Upgrade Now</a>					
-		</div>
-		<?php
-	}
-
-	public static function srbc_v_1_6_6_admin_notice_ignore() {
-		if ( isset( $_GET['srbc-v-1-6-7-ignore-notice'] ) ) {
-			update_option( 'srbc_v_1_6_7_admin_notice_ignore', 'true' );
-		}	
 	}
 
 	/**
@@ -215,7 +100,7 @@ class WC_Country_Report {
 	 * @return array Array of Report types & their labels, including the Subscription product type.
 	 * @since 1.0
 	 */
-	public static function initialize_country_admin_reports_path( $report_path, $name, $class ) {		
+	public static function initialize_country_admin_reports_path( $report_path, $name, $class ) {
 		if ( 'WC_Report_sales_by_country' == $class ) {
 			$report_path = self::$plugin_dir . '/classes/class-wc-report-' . $name . '.php';
 		}
@@ -235,22 +120,22 @@ class WC_Country_Report {
 		load_plugin_textdomain( 'woocommerce-sales-country-reports', false, basename( self::$plugin_dir ) . '/lang' );
 
 	}
-	
+
 	/**
 	 * Load admin styles.
 	 */
-	public static function admin_styles() {		
+	public static function admin_styles() {
 		wp_enqueue_style( 'country_report_style', plugin_dir_url( __FILE__ ) . 'assets/css/admin.css' );
 
-		//amcharts js	
+		//amcharts js
 		wp_enqueue_script( 'amcharts', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/amcharts.js' );
 		wp_enqueue_script( 'amcharts-light-theme', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/light.js' );
 		wp_enqueue_script( 'amcharts-pie', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/pie.js' );
 		wp_enqueue_script( 'amcharts-serial', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/serial.js' );
 		wp_enqueue_script( 'amcharts-export', plugin_dir_url( __FILE__ ) . 'assets/js/amcharts/export.js' );
-		
+
 		//Main js
-		wp_enqueue_script( 'sales-by-country-main-js', plugin_dir_url( __FILE__ ) . 'assets/js/script.js' );		
+		wp_enqueue_script( 'sales-by-country-main-js', plugin_dir_url( __FILE__ ) . 'assets/js/script.js' );
 	}
 
 	/**
@@ -258,21 +143,21 @@ class WC_Country_Report {
 	 *
 	 * Create Table
 	 *
-	 * Insert data 
+	 * Insert data
 	 *
-	 * 
-	*/	
+	 *
+	*/
 	 public static function woo_sales_country_report_install(){
-		
-		global $wpdb;	
-		
+
+		global $wpdb;
+
 		$woo_sales_country_table_name = $wpdb->prefix . 'woo_sales_country_region';
 
 		// create the ECPT metabox database table
-		if($wpdb->get_var("show tables like '$woo_sales_country_table_name'") != $woo_sales_country_table_name) 
+		if($wpdb->get_var("show tables like '$woo_sales_country_table_name'") != $woo_sales_country_table_name)
 		{
 			$charset_collate = $wpdb->get_charset_collate();
-			
+
 			$sql = "CREATE TABLE $woo_sales_country_table_name (
 				id mediumint(9) NOT NULL AUTO_INCREMENT,
 				country varchar(500) DEFAULT '' NOT NULL,
@@ -282,691 +167,691 @@ class WC_Country_Report {
 
 			require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 			dbDelta( $sql );
-			
+
 			$country_list = array(
 				array(
-					"Region" => "Asia", 
-					"Country" => "AF"), 
+					"Region" => "Asia",
+					"Country" => "AF"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "AL"), 
+					"Region" => "East Europe",
+					"Country" => "AL"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "DZ"), 
+					"Region" => "Africa",
+					"Country" => "DZ"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "AS"), 
+					"Region" => "Asia",
+					"Country" => "AS"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "AD"), 
+					"Region" => "West Europe",
+					"Country" => "AD"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "AO"), 
+					"Region" => "Africa",
+					"Country" => "AO"),
 				array(
-					"Region" => "South America", 
-					"Country" => "AI"), 
+					"Region" => "South America",
+					"Country" => "AI"),
 				array(
-					"Region" => "South America", 
-					"Country" => "AG"), 
+					"Region" => "South America",
+					"Country" => "AG"),
 				array(
-					"Region" => "South America", 
-					"Country" => "AR"), 
+					"Region" => "South America",
+					"Country" => "AR"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "AM"), 
+					"Region" => "East Europe",
+					"Country" => "AM"),
 				array(
-					"Region" => "South America", 
-					"Country" => "AW"), 
+					"Region" => "South America",
+					"Country" => "AW"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "AU"), 
+					"Region" => "Asia",
+					"Country" => "AU"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "AT"), 
+					"Region" => "West Europe",
+					"Country" => "AT"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "AZ"), 
+					"Region" => "East Europe",
+					"Country" => "AZ"),
 				array(
-					"Region" => "South America", 
-					"Country" => "BS"), 
+					"Region" => "South America",
+					"Country" => "BS"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "BH"), 
+					"Region" => "Arab Countries",
+					"Country" => "BH"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "BD"), 
+					"Region" => "Asia",
+					"Country" => "BD"),
 				array(
-					"Region" => "South America", 
-					"Country" => "BB"), 
+					"Region" => "South America",
+					"Country" => "BB"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "BY"), 
+					"Region" => "East Europe",
+					"Country" => "BY"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "BE"), 
+					"Region" => "West Europe",
+					"Country" => "BE"),
 				array(
-					"Region" => "South America", 
-					"Country" => "BZ"), 
+					"Region" => "South America",
+					"Country" => "BZ"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "BJ"), 
+					"Region" => "Africa",
+					"Country" => "BJ"),
 				array(
-					"Region" => "North America", 
-					"Country" => "BM"), 
+					"Region" => "North America",
+					"Country" => "BM"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "BT"), 
+					"Region" => "Asia",
+					"Country" => "BT"),
 				array(
-					"Region" => "South America", 
-					"Country" => "BO"), 
+					"Region" => "South America",
+					"Country" => "BO"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "BA"), 
+					"Region" => "East Europe",
+					"Country" => "BA"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "BW"), 
+					"Region" => "Africa",
+					"Country" => "BW"),
 				array(
-					"Region" => "South America", 
-					"Country" => "BR"), 
+					"Region" => "South America",
+					"Country" => "BR"),
 				array(
-					"Region" => "South America", 
-					"Country" => "IO"), 
+					"Region" => "South America",
+					"Country" => "IO"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "BN"), 
+					"Region" => "Asia",
+					"Country" => "BN"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "BG"), 
+					"Region" => "East Europe",
+					"Country" => "BG"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "BF"), 
+					"Region" => "Africa",
+					"Country" => "BF"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MM"), 
+					"Region" => "Asia",
+					"Country" => "MM"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "BI"), 
+					"Region" => "Africa",
+					"Country" => "BI"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "KH"), 
+					"Region" => "Asia",
+					"Country" => "KH"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "CM"), 
+					"Region" => "Africa",
+					"Country" => "CM"),
 				array(
-					"Region" => "North America", 
-					"Country" => "CA"), 
+					"Region" => "North America",
+					"Country" => "CA"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "CV"), 
+					"Region" => "Africa",
+					"Country" => "CV"),
 				array(
-					"Region" => "South America", 
-					"Country" => "KY"), 
+					"Region" => "South America",
+					"Country" => "KY"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "CF"), 
+					"Region" => "Africa",
+					"Country" => "CF"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "TD"), 
+					"Region" => "Africa",
+					"Country" => "TD"),
 				array(
-					"Region" => "South America", 
-					"Country" => "CL"), 
+					"Region" => "South America",
+					"Country" => "CL"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "CN"), 
+					"Region" => "Asia",
+					"Country" => "CN"),
 				array(
-					"Region" => "South America", 
-					"Country" => "CO"), 
+					"Region" => "South America",
+					"Country" => "CO"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "KM"), 
+					"Region" => "Africa",
+					"Country" => "KM"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "CG"), 
+					"Region" => "Africa",
+					"Country" => "CG"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "CD"), 
+					"Region" => "Africa",
+					"Country" => "CD"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "CK"), 
+					"Region" => "Asia",
+					"Country" => "CK"),
 				array(
-					"Region" => "South America", 
-					"Country" => "CR"), 
+					"Region" => "South America",
+					"Country" => "CR"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "CI"), 
+					"Region" => "Africa",
+					"Country" => "CI"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "HR"), 
+					"Region" => "East Europe",
+					"Country" => "HR"),
 				array(
-					"Region" => "South America", 
-					"Country" => "CU"), 
+					"Region" => "South America",
+					"Country" => "CU"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "CY"), 
+					"Region" => "Arab Countries",
+					"Country" => "CY"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "CZ"), 
+					"Region" => "East Europe",
+					"Country" => "CZ"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "DK"), 
+					"Region" => "West Europe",
+					"Country" => "DK"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "DJ"), 
+					"Region" => "Africa",
+					"Country" => "DJ"),
 				array(
-					"Region" => "South America", 
-					"Country" => "DM"), 
+					"Region" => "South America",
+					"Country" => "DM"),
 				array(
-					"Region" => "South America", 
-					"Country" => "DO"), 
+					"Region" => "South America",
+					"Country" => "DO"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "TL"), 
+					"Region" => "Asia",
+					"Country" => "TL"),
 				array(
-					"Region" => "South America", 
-					"Country" => "EC"), 
+					"Region" => "South America",
+					"Country" => "EC"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "EG"), 
+					"Region" => "Africa",
+					"Country" => "EG"),
 				array(
-					"Region" => "South America", 
-					"Country" => "SV"), 
+					"Region" => "South America",
+					"Country" => "SV"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "GQ"), 
+					"Region" => "Africa",
+					"Country" => "GQ"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "ER"), 
+					"Region" => "Africa",
+					"Country" => "ER"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "EE"), 
+					"Region" => "East Europe",
+					"Country" => "EE"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "ET"), 
+					"Region" => "Africa",
+					"Country" => "ET"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "FO"), 
+					"Region" => "West Europe",
+					"Country" => "FO"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "FJ"), 
+					"Region" => "Asia",
+					"Country" => "FJ"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "FI"), 
+					"Region" => "West Europe",
+					"Country" => "FI"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "FR"), 
+					"Region" => "West Europe",
+					"Country" => "FR"),
 				array(
-					"Region" => "South America", 
-					"Country" => "GF"), 
+					"Region" => "South America",
+					"Country" => "GF"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "PF"), 
+					"Region" => "Asia",
+					"Country" => "PF"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "GA"), 
+					"Region" => "Africa",
+					"Country" => "GA"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "GM"), 
+					"Region" => "Africa",
+					"Country" => "GM"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "GE"), 
+					"Region" => "East Europe",
+					"Country" => "GE"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "DE"), 
+					"Region" => "West Europe",
+					"Country" => "DE"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "GH"), 
+					"Region" => "Africa",
+					"Country" => "GH"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "GI"), 
+					"Region" => "West Europe",
+					"Country" => "GI"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "GR"), 
+					"Region" => "West Europe",
+					"Country" => "GR"),
 				array(
-					"Region" => "North America", 
-					"Country" => "GL"), 
+					"Region" => "North America",
+					"Country" => "GL"),
 				array(
-					"Region" => "South America", 
-					"Country" => "GD"), 
+					"Region" => "South America",
+					"Country" => "GD"),
 				array(
-					"Region" => "South America", 
-					"Country" => "GP"), 
+					"Region" => "South America",
+					"Country" => "GP"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "GU"), 
+					"Region" => "Asia",
+					"Country" => "GU"),
 				array(
-					"Region" => "South America", 
-					"Country" => "GT"), 
+					"Region" => "South America",
+					"Country" => "GT"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "GG"), 
+					"Region" => "West Europe",
+					"Country" => "GG"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "GN"), 
+					"Region" => "Africa",
+					"Country" => "GN"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "GW"), 
+					"Region" => "Africa",
+					"Country" => "GW"),
 				array(
-					"Region" => "South America", 
-					"Country" => "GY"), 
+					"Region" => "South America",
+					"Country" => "GY"),
 				array(
-					"Region" => "South America", 
-					"Country" => "HT"), 
+					"Region" => "South America",
+					"Country" => "HT"),
 				array(
-					"Region" => "South America", 
-					"Country" => "HN"), 
+					"Region" => "South America",
+					"Country" => "HN"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "HK"), 
+					"Region" => "Asia",
+					"Country" => "HK"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "HU"), 
+					"Region" => "East Europe",
+					"Country" => "HU"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "IS"), 
+					"Region" => "West Europe",
+					"Country" => "IS"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "IN"), 
+					"Region" => "Asia",
+					"Country" => "IN"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "ID"), 
+					"Region" => "Asia",
+					"Country" => "ID"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "IR"), 
+					"Region" => "Asia",
+					"Country" => "IR"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "IQ"), 
+					"Region" => "Arab Countries",
+					"Country" => "IQ"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "IE"), 
+					"Region" => "West Europe",
+					"Country" => "IE"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "IM"), 
+					"Region" => "West Europe",
+					"Country" => "IM"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "IL"), 
+					"Region" => "Arab Countries",
+					"Country" => "IL"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "IT"), 
+					"Region" => "West Europe",
+					"Country" => "IT"),
 				array(
-					"Region" => "South America", 
-					"Country" => "JM"), 
+					"Region" => "South America",
+					"Country" => "JM"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "JP"), 
+					"Region" => "Asia",
+					"Country" => "JP"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "JE"), 
+					"Region" => "West Europe",
+					"Country" => "JE"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "JO"), 
+					"Region" => "Arab Countries",
+					"Country" => "JO"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "KZ"), 
+					"Region" => "East Europe",
+					"Country" => "KZ"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "KE"), 
+					"Region" => "Africa",
+					"Country" => "KE"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "KI"), 
+					"Region" => "Asia",
+					"Country" => "KI"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "KP"), 
+					"Region" => "Asia",
+					"Country" => "KP"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "KR"), 
+					"Region" => "Asia",
+					"Country" => "KR"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "KW"), 
+					"Region" => "Arab Countries",
+					"Country" => "KW"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "KG"), 
+					"Region" => "East Europe",
+					"Country" => "KG"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "LA"), 
+					"Region" => "Asia",
+					"Country" => "LA"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "LV"), 
+					"Region" => "East Europe",
+					"Country" => "LV"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "LB"), 
+					"Region" => "Arab Countries",
+					"Country" => "LB"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "LS"), 
+					"Region" => "Africa",
+					"Country" => "LS"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "LS"), 
+					"Region" => "Africa",
+					"Country" => "LS"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "LS"), 
+					"Region" => "Africa",
+					"Country" => "LS"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "LI"), 
+					"Region" => "West Europe",
+					"Country" => "LI"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "LT"), 
+					"Region" => "East Europe",
+					"Country" => "LT"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "LU"), 
+					"Region" => "West Europe",
+					"Country" => "LU"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MO"), 
+					"Region" => "Asia",
+					"Country" => "MO"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "MK"), 
+					"Region" => "East Europe",
+					"Country" => "MK"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "MG"), 
+					"Region" => "Africa",
+					"Country" => "MG"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "MW"), 
+					"Region" => "Africa",
+					"Country" => "MW"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MY"), 
+					"Region" => "Asia",
+					"Country" => "MY"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MV"), 
+					"Region" => "Asia",
+					"Country" => "MV"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "ML"), 
+					"Region" => "Africa",
+					"Country" => "ML"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "MT"), 
+					"Region" => "West Europe",
+					"Country" => "MT"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MH"), 
+					"Region" => "Asia",
+					"Country" => "MH"),
 				array(
-					"Region" => "South America", 
-					"Country" => "MQ"), 
+					"Region" => "South America",
+					"Country" => "MQ"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "MR"), 
+					"Region" => "Africa",
+					"Country" => "MR"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "MU"), 
+					"Region" => "Africa",
+					"Country" => "MU"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "YT"), 
+					"Region" => "Africa",
+					"Country" => "YT"),
 				array(
-					"Region" => "South America", 
-					"Country" => "MX"), 
+					"Region" => "South America",
+					"Country" => "MX"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "FM"), 
+					"Region" => "Asia",
+					"Country" => "FM"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "MD"), 
+					"Region" => "East Europe",
+					"Country" => "MD"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "MC"), 
+					"Region" => "West Europe",
+					"Country" => "MC"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MN"), 
+					"Region" => "Asia",
+					"Country" => "MN"),
 				array(
-					"Region" => "South America", 
-					"Country" => "MS"), 
+					"Region" => "South America",
+					"Country" => "MS"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "MA"), 
+					"Region" => "Africa",
+					"Country" => "MA"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "MZ"), 
+					"Region" => "Africa",
+					"Country" => "MZ"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "NA"), 
+					"Region" => "Africa",
+					"Country" => "NA"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "NR"), 
+					"Region" => "Asia",
+					"Country" => "NR"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "NP"), 
+					"Region" => "Asia",
+					"Country" => "NP"),
 				array(
-					"Region" => "West Europe", 
+					"Region" => "West Europe",
 					"Country" => "NL"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "NC"), 
+					"Region" => "Asia",
+					"Country" => "NC"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "NZ"), 
+					"Region" => "Asia",
+					"Country" => "NZ"),
 				array(
-					"Region" => "South America", 
-					"Country" => "NI"), 
+					"Region" => "South America",
+					"Country" => "NI"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "NE"), 
+					"Region" => "Africa",
+					"Country" => "NE"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "NG"), 
+					"Region" => "Africa",
+					"Country" => "NG"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "MP"), 
+					"Region" => "Asia",
+					"Country" => "MP"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "NO"), 
+					"Region" => "West Europe",
+					"Country" => "NO"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "OM"), 
+					"Region" => "Arab Countries",
+					"Country" => "OM"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "PK"), 
+					"Region" => "Asia",
+					"Country" => "PK"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "PW"), 
+					"Region" => "Asia",
+					"Country" => "PW"),
 				array(
-					"Region" => "South America", 
-					"Country" => "PA"), 
+					"Region" => "South America",
+					"Country" => "PA"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "PG"), 
+					"Region" => "Asia",
+					"Country" => "PG"),
 				array(
-					"Region" => "South America", 
-					"Country" => "PY"), 
+					"Region" => "South America",
+					"Country" => "PY"),
 				array(
-					"Region" => "South America", 
-					"Country" => "PE"), 
+					"Region" => "South America",
+					"Country" => "PE"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "PH"), 
+					"Region" => "Asia",
+					"Country" => "PH"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "PL"), 
+					"Region" => "East Europe",
+					"Country" => "PL"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "PT"), 
+					"Region" => "West Europe",
+					"Country" => "PT"),
 				array(
-					"Region" => "South America", 
-					"Country" => "PR"), 
+					"Region" => "South America",
+					"Country" => "PR"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "QA"), 
+					"Region" => "Arab Countries",
+					"Country" => "QA"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "RE"), 
+					"Region" => "Africa",
+					"Country" => "RE"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "RO"), 
+					"Region" => "East Europe",
+					"Country" => "RO"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "RU"), 
+					"Region" => "East Europe",
+					"Country" => "RU"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "RW"), 
+					"Region" => "Africa",
+					"Country" => "RW"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SH"), 
+					"Region" => "Africa",
+					"Country" => "SH"),
 				array(
-					"Region" => "South America", 
-					"Country" => "KN"), 
+					"Region" => "South America",
+					"Country" => "KN"),
 				array(
-					"Region" => "South America", 
-					"Country" => "LC"), 
+					"Region" => "South America",
+					"Country" => "LC"),
 				array(
-					"Region" => "North America", 
-					"Country" => "PM"), 
+					"Region" => "North America",
+					"Country" => "PM"),
 				array(
-					"Region" => "South America", 
-					"Country" => "VC"), 
+					"Region" => "South America",
+					"Country" => "VC"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "WS"), 
+					"Region" => "Asia",
+					"Country" => "WS"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "SM"), 
+					"Region" => "West Europe",
+					"Country" => "SM"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "ST"), 
+					"Region" => "Africa",
+					"Country" => "ST"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "SA"), 
+					"Region" => "Arab Countries",
+					"Country" => "SA"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SN"), 
+					"Region" => "Africa",
+					"Country" => "SN"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "RS"), 
+					"Region" => "East Europe",
+					"Country" => "RS"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SC"), 
+					"Region" => "Africa",
+					"Country" => "SC"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SL"), 
+					"Region" => "Africa",
+					"Country" => "SL"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "SG"), 
+					"Region" => "Asia",
+					"Country" => "SG"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "SK"), 
+					"Region" => "East Europe",
+					"Country" => "SK"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "SI"), 
+					"Region" => "East Europe",
+					"Country" => "SI"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "SB"), 
+					"Region" => "Asia",
+					"Country" => "SB"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SO"), 
+					"Region" => "Africa",
+					"Country" => "SO"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "ZA"), 
+					"Region" => "Africa",
+					"Country" => "ZA"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "ES"), 
+					"Region" => "West Europe",
+					"Country" => "ES"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "LK"), 
+					"Region" => "Asia",
+					"Country" => "LK"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SD"), 
+					"Region" => "Africa",
+					"Country" => "SD"),
 				array(
-					"Region" => "South America", 
-					"Country" => "SR"), 
+					"Region" => "South America",
+					"Country" => "SR"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "SZ"), 
+					"Region" => "Africa",
+					"Country" => "SZ"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "SE"), 
+					"Region" => "West Europe",
+					"Country" => "SE"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "CH"), 
+					"Region" => "West Europe",
+					"Country" => "CH"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "SY"), 
+					"Region" => "Arab Countries",
+					"Country" => "SY"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "TW"), 
+					"Region" => "Asia",
+					"Country" => "TW"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "TJ"), 
+					"Region" => "East Europe",
+					"Country" => "TJ"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "TZ"), 
+					"Region" => "Africa",
+					"Country" => "TZ"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "TH"), 
+					"Region" => "Asia",
+					"Country" => "TH"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "TG"), 
+					"Region" => "Africa",
+					"Country" => "TG"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "TO"), 
+					"Region" => "Asia",
+					"Country" => "TO"),
 				array(
-					"Region" => "South America", 
-					"Country" => "TT"), 
+					"Region" => "South America",
+					"Country" => "TT"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "TN"), 
+					"Region" => "Africa",
+					"Country" => "TN"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "TR"), 
+					"Region" => "Arab Countries",
+					"Country" => "TR"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "TM"), 
+					"Region" => "East Europe",
+					"Country" => "TM"),
 				array(
-					"Region" => "South America", 
-					"Country" => "TC"), 
+					"Region" => "South America",
+					"Country" => "TC"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "TV"), 
+					"Region" => "Asia",
+					"Country" => "TV"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "UG"), 
+					"Region" => "Africa",
+					"Country" => "UG"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "UA"), 
+					"Region" => "East Europe",
+					"Country" => "UA"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "AE"), 
+					"Region" => "Arab Countries",
+					"Country" => "AE"),
 				array(
-					"Region" => "West Europe", 
-					"Country" => "AE"), 
+					"Region" => "West Europe",
+					"Country" => "AE"),
 				array(
-					"Region" => "North America", 
-					"Country" => "US"), 
+					"Region" => "North America",
+					"Country" => "US"),
 				array(
-					"Region" => "South America", 
-					"Country" => "UY"), 
+					"Region" => "South America",
+					"Country" => "UY"),
 				array(
-					"Region" => "East Europe", 
-					"Country" => "UZ"), 
+					"Region" => "East Europe",
+					"Country" => "UZ"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "VU"), 
+					"Region" => "Asia",
+					"Country" => "VU"),
 				array(
-					"Region" => "South America", 
-					"Country" => "VE"), 
+					"Region" => "South America",
+					"Country" => "VE"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "VN"), 
+					"Region" => "Asia",
+					"Country" => "VN"),
 				array(
-					"Region" => "South America", 
-					"Country" => "VG"), 
+					"Region" => "South America",
+					"Country" => "VG"),
 				array(
-					"Region" => "Asia", 
-					"Country" => "WF"), 
+					"Region" => "Asia",
+					"Country" => "WF"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "EH"), 
+					"Region" => "Africa",
+					"Country" => "EH"),
 				array(
-					"Region" => "Arab Countries", 
-					"Country" => "YE"), 
+					"Region" => "Arab Countries",
+					"Country" => "YE"),
 				array(
-					"Region" => "Africa", 
-					"Country" => "ZM"), 
+					"Region" => "Africa",
+					"Country" => "ZM"),
 				array(
-					"Region" => "Africa", 
+					"Region" => "Africa",
 					"Country" => "ZW")
 			);
 
-			foreach($country_list as $country){								
+			foreach($country_list as $country){
 				$success = $wpdb->insert($woo_sales_country_table_name, array(
 					"country" => $country['Country'],
 					"region" => $country['Region'],
 				));
 			}
-		}		
-		
-	}	
+		}
+
+	}
 } // end \WC_Location_Report class
 
 
