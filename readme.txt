@@ -1,5 +1,5 @@
 ﻿=== Sales Report By Country for WooCommerce ===
-Contributors: zorem
+Contributors: zorem, diablodale
 Tags: woocommerce, extension, reporting, analytics
 Requires at least: 5.3
 Tested up to: 6.1.1
