@@ -256,7 +256,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 			$index++;
 		}
 
-		$placeholder = __( 'This is the sum of the order totals after any refunds and including shipping and taxes.', 'woo-sales-country-reports' );
+		$placeholder = __( 'This is the sum of the order totals including shipping and taxes.', 'woo-sales-country-reports' );
 
 		foreach ( $data->order_counts as $location_values ) {
 			if ( '' == $location_values->countries_data ) {
@@ -287,7 +287,7 @@ class WC_Report_Sales_By_Country extends WC_Admin_Report {
 		}
 
 		$legend[] = array(
-			'title' => sprintf( __( '%s sales in this period', 'woo-sales-country-reports' ), '<strong>' . $total . '</strong>' ),
+			'title' => sprintf( __( '%s sales before refunds in this period', 'woo-sales-country-reports' ), '<strong>' . $total . '</strong>' ),
 			'placeholder' => $placeholder,
 			'highlight_series' => 1,
 		);
